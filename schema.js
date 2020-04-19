@@ -1,13 +1,13 @@
 const graphql = require('graphql');
+const db = require('./data/db-config.js');
 
-const { GraphQLObjectType, GraphQLInt, GraphQLString, GraphQLSchema } = graphql;
-
-// dummy data
-let verbs = [
-	{ spanishVerb: 'abandonar', tense: 'Presente', id: 1 },
-	{ spanishVerb: 'abandonar', tense: 'Futuro', id: 2 },
-	{ spanishVerb: 'abandonar', tense: 'Pretérito', id: 3 }
-];
+const {
+	GraphQLObjectType,
+	GraphQLInt,
+	GraphQLString,
+	GraphQLSchema,
+	GraphQLID
+} = graphql;
 
 const VerbType = new GraphQLObjectType({
 	name: 'Verb',
@@ -24,7 +24,9 @@ const RootQuery = new GraphQLObjectType({
 		verb: {
 			type: VerbType,
 			args: { id: { type: GraphQLInt } },
-			resolve(parent, args) {
+			async resolve(parent, args) {
+				let verbs = await db('verbs');
+
 				return verbs.find(verb => {
 					if (verb.id === args.id) {
 						return verb;
