@@ -6,7 +6,8 @@ const {
 	GraphQLInt,
 	GraphQLString,
 	GraphQLSchema,
-	GraphQLID
+	GraphQLID,
+	GraphQLList
 } = graphql;
 
 const VerbType = new GraphQLObjectType({
@@ -14,7 +15,15 @@ const VerbType = new GraphQLObjectType({
 	fields: () => ({
 		id: { type: GraphQLInt },
 		spanishVerb: { type: GraphQLString },
-		tense: { type: GraphQLString }
+		tense: { type: GraphQLString },
+		mood: { type: GraphQLString },
+		englishDefinition: { type: GraphQLString },
+		firstPersonSingular: { type: GraphQLString },
+		secondPersonSingular: { type: GraphQLString },
+		thirdPersonSingular: { type: GraphQLString },
+		firstPersonPlural: { type: GraphQLString },
+		secondPersonPlural: { type: GraphQLString },
+		thirdPersonPlural: { type: GraphQLString }
 	})
 });
 
@@ -29,6 +38,19 @@ const RootQuery = new GraphQLObjectType({
 
 				return verbs.find(verb => {
 					if (verb.id === args.id) {
+						return verb;
+					}
+				});
+			}
+		},
+		verbList: {
+			type: new GraphQLList(VerbType),
+			args: { verb: { type: GraphQLString } },
+			async resolve(parent, args) {
+				let verbs = await db('verbs');
+
+				return verbs.filter(verb => {
+					if (verb.spanishVerb === args.verb) {
 						return verb;
 					}
 				});
